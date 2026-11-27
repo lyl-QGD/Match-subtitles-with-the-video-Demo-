@@ -1,0 +1,22 @@
+-- 可选：001 成功后，为后端创建最小运行账号。
+-- 先把下面的占位密码替换成密码管理工具生成的强密码。
+-- 不将修改后的内容保存到 Git，不在聊天中发送真实密码。
+BEGIN;
+CREATE ROLE dialogue_backend LOGIN PASSWORD 'REPLACE_WITH_A_STRONG_RANDOM_PASSWORD'
+  NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT;
+GRANT CONNECT ON DATABASE postgres TO dialogue_backend;
+GRANT USAGE ON SCHEMA dialogue TO dialogue_backend;
+GRANT SELECT ON dialogue.schema_versions TO dialogue_backend;
+DO $$
+DECLARE t record;
+BEGIN
+  FOR t IN SELECT tablename FROM pg_tables
+    WHERE schemaname='dialogue' AND tablename <> 'schema_versions' LOOP
+    EXECUTE format('GRANT SELECT, INSERT, UPDATE, DELETE ON dialogue.%I TO dialogue_backend', t.tablename);
+    EXECUTE format('CREATE POLICY backend_access ON dialogue.%I FOR ALL TO dialogue_backend USING (true) WITH CHECK (true)', t.tablename);
+  END LOOP;
+END $$;
+CREATE POLICY backend_version_read ON dialogue.schema_versions
+  FOR SELECT TO dialogue_backend USING (true);
+ALTER ROLE dialogue_backend SET search_path = dialogue, pg_catalog;
+COMMIT;
