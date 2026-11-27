@@ -62,6 +62,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-worker.ps1
 ## M3 storage
 See [M3 storage operations](docs/M3_STORAGE.md) for R2 check/upload/resume commands and required browser CORS setup. Upload tooling is CLI-only; no anonymous upload endpoint is exposed.
 
-## M8 operations
 
-See [M8 backup, restore and usage operations](docs/M8_OPERATIONS.md). The scripts never create paid cloud resources and restore only to a separately confirmed empty Supabase project.
+[👉 在线体验 Demo](https://match-subtitles-with-the-video-demo.netlify.app/)
+
+
+
+
